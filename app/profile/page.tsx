@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { createClient } from "../../utils/supabase/client";
-import useProfile from "../hook/useProfile";
+import { createClient } from "@/utils/supabase/client";
+import {useProfile} from "@/hooks/useProfile";
 import { useRouter } from "next/navigation";
+import Avatar from "@/components/ui/user-avatar";
 
   const ProfilePage: React.FC = () => {
     const supabase = createClient();
@@ -169,7 +170,7 @@ import { useRouter } from "next/navigation";
                     objectFit="cover"
                   />
                 ) : (
-                  <span className="text-gray-400">No Photo</span>
+                  <Avatar userId={profile?.id ?? "" } type='free' />
                 )}
               </div>
 

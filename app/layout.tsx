@@ -2,11 +2,11 @@ import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import Link from "next/link";
-import HeaderAuth from "@/components/header-auth";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import QueryClientWrapper from "@/components/query-client-wrapper";
+import HeaderAuth from "@/components/sections/header/header-auth";
+import { ThemeSwitcher } from "@/components/design/utils/theme-switcher";
+import QueryClientWrapper from "@/components/design/providers/query-client-wrapper";
 import "./globals.css";
-import ClientSideLogo from '@/components/client-side-logo';
+import ClientSideLogo from '@/components/design/utils/client-side-logo';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -16,6 +16,10 @@ export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Almanet",
   description: "The fastest way to connect with your college mates.",
+  icons: {
+    icon: '/asset/almanet-favicon-color.svg', // Path to your favicon
+    apple: '/asset/almanet-favicon-color.svg', // Optional: Apple touch icon
+  }
 };
 
 export default function RootLayout({
