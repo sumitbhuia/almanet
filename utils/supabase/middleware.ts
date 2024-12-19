@@ -38,7 +38,6 @@ export async function updateSession(request: NextRequest) {
   } else {
     if (protectedPaths.includes(url.pathname)) {
       return NextResponse.redirect(
-        // new URL(`/signin?next=${next || url.pathname}`, request.url)
         new URL(`/sign-in`, request.url)
       );
     }

@@ -120,8 +120,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   // {error : AuthError} is the error message if the request fails
   // {error : null} if the request is successful
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    // This strucuture is important for the redirect to work
-    redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
+    redirectTo: `${origin}/callback?redirect_to=/reset-password`,
   });
 
   // If an error occurs, log the error message and redirect to the forgot-password page
@@ -142,7 +141,6 @@ export const forgotPasswordAction = async (formData: FormData) => {
   );
 };
 
-// Function to reset the user's password after they click the link in the email
 export const resetPasswordAction = async (formData: FormData) => {
   const supabase = createClient();
 
@@ -185,15 +183,21 @@ export const resetPasswordAction = async (formData: FormData) => {
 
 
     if (error) {
-      console.error("Error updating password:", error);
-      console.error("Error details:", error.message);
-      encodedRedirect(
-        "error",
-        "/reset-password",
-        "Password update failed"
-      );
-    } 
-    
+      // Check if the error is related to the same password
+      if (error.message.includes('New password should be different from the old password')) {
+        encodedRedirect(
+          "error",
+          "/reset-password",
+          "New password should be different from the old password"
+        );
+      } else {
+        encodedRedirect(
+          "error",
+          "/reset-password",
+          "Password update failed"
+        );
+      }
+    }
     
     // Sign out the user after password reset
     await supabase.auth.signOut();
