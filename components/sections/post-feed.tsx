@@ -19,7 +19,7 @@ const supabase = createClient()
 
 interface PostFeedProps {
   className?: string
-  profileData: any // Replace with proper type
+  profileData?: { id?: string }; // Adjusted to reflect optional `profileData` and `id`
 }
 
 export function PostFeed({ className, profileData }: PostFeedProps) {
@@ -38,6 +38,9 @@ export function PostFeed({ className, profileData }: PostFeedProps) {
 
   const createPostMutation = useMutation(
     async (postContent: string) => {
+      if (!profileData?.id) {
+        throw new Error("User ID is missing.");
+      }
       const { data, error } = await supabase
         .from('post')
         .insert({
@@ -63,19 +66,19 @@ export function PostFeed({ className, profileData }: PostFeedProps) {
           title: "Error",
           description: "Failed to create post. Please try again.",
           variant: "destructive",
-        })
-        console.error('Error creating post:', error)
+        });
+        console.error('Error creating post:', error);
       },
     }
-  )
+  );
 
   const handlePostSubmit = async () => {
-    const postContent = document.querySelector('textarea')?.value
+    const postContent = document.querySelector('textarea')?.value;
     if (postContent) {
-      await createPostMutation.mutateAsync(postContent)
-      setIsPostingModalOpen(false)
+      await createPostMutation.mutateAsync(postContent);
+      setIsPostingModalOpen(false);
     }
-  }
+  };
 
   //if (isLoading) return <div>Loading posts...</div>
   if(isLoading){
@@ -113,7 +116,11 @@ return (
       <Card>
         <CardContent className="pt-4">
           <div className="flex items-center">
-          <Avatar userId={profileData.id} size = 'medium' className='mr-3' />
+          {profileData?.id ? (
+              <Avatar userId={profileData.id} size="medium" className="mr-3" />
+            ) : (
+              <div className="w-10 h-10 bg-gray-400 rounded-full mr-3"></div>
+            )}
             <Button
               onClick={() => setIsPostingModalOpen(true)}
               variant="outline"
@@ -205,101 +212,8 @@ function PostingModal({ onClose, onSubmit }: PostingModalProps) {
   )
 }
 
-// interface ExpandedPostModalProps {
-//   postId: number;
-//   onClose: () => void;
-// }
-
-// function ExpandedPostModal({ postId, onClose }: ExpandedPostModalProps) {
-//   const { comments, fetchComments } = useStore()
-//   const { isLoading, error } = useQuery(['comments', postId], () => fetchComments(postId))
-
-//   const [newComment, setNewComment] = useState('') 
-
-//   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-//     setNewComment(e.target.value) // Update comment input state
-//   }
-
-  
-
-//   if (isLoading) return <div>Loading comments...</div>
-//   if (error) return <div>Error loading comments</div>
-
-//   return (
-//     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-//       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-//         <CardHeader>
-//           <h2 className="text-2xl font-bold">Post Details</h2>
-//         </CardHeader>
-//         <CardContent>
-//           {/* Post content here */}
-//           {/* <div className="mt-4">
-//             <h3 className="font-semibold mb-2">Comments</h3>
-//             {comments.map((comment) => (
-//               <div key={comment.id} className="mb-2">
-//                             <Avatar userId={comment.user_id} className="w-12 h-12" />
-//                 <p className="font-semibold">{comment.profiles?.display_name}</p>
-//                 <p>{comment.content}</p>
-//               </div>
-//             ))}
-//           </div> */}
-
-//                 <div className="border-t pt-4">
-//                     <h3 className="font-semibold text-neutral-800 dark:text-neutral-200 mb-2">Comments</h3>
-//                     <div className="space-y-4">
-//                       {comments.length > 0 ? (
-//                         comments.map((comment) => (
-//                           <div key={comment.id} className="flex items-start">
-//                             <Avatar userId={comment.user_id} className="w-8 h-8 mr-3" />
-//                             <div>
-//                               <p className="font-semibold text-neutral-800 dark:text-neutral-200">{comment.profiles?.display_name || 'Unknown User'}</p>
-//                               <p className="text-sm text-neutral-600 dark:text-neutral-400">{comment.content}</p>
-//                             </div>
-//                           </div>
-//                         ))
-//                       ) : (
-//                         <p className="text-neutral-500 dark:text-neutral-400">No comments yet</p>
-//                       )}
-//                     </div>
-//                     <div className="mt-4">
-//                       <textarea
-//                         value={newComment}
-//                         onChange={handleCommentChange}
-//                         className="w-full p-3 border rounded-lg dark:bg-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                         placeholder="Add your reply..."
-//                         rows={3}
-//                       ></textarea>
-//                       <button
-//                         onClick={handleCommentSubmit}
-//                         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-//                       >
-//                         Reply
-//                       </button>
-//                     </div>
-//                   </div>
-
-
-
-
-
-//         </CardContent>
-//         <CardFooter>
-//           <Button onClick={onClose}>Close</Button>
-//         </CardFooter>
-//       </Card>
-//     </div>
-//   )
-// }
-
-
-
-
-
-
-
-
 interface ExpandedPostModalProps {
-  postId: number | null
+  postId: string | null
   onClose: () => void
   currentUserId: string
 }

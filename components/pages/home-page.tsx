@@ -22,7 +22,7 @@ export function HomePageComponent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <SearchSection className="w-full lg:w-1/3" />
-          <PostFeed className="w-full lg:w-5/12" profileData={profileData} />
+          {profileData && <PostFeed className="w-full lg:w-5/12" profileData={profileData} />}
           <SidePanel 
             className="w-full lg:w-1/4" 
             profileData={profileData} 
